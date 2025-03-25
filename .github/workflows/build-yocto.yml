@@ -1,6 +1,7 @@
 name: Build Yocto
 
 on:
+  workflow_dispatch:
   workflow_call:
     outputs:
       artifacts_url:
