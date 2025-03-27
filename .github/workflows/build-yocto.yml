@@ -88,6 +88,7 @@ jobs:
           #- qcom-armv7a
     runs-on: 
     - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+    - buildspec-override:true
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
