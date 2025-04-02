@@ -45,7 +45,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: kas-lock
+          name: kas-lock-aws
           path: ci/*.lock.yml
 
   yocto-check-layer:
@@ -61,8 +61,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: kas-lock
-          path: ci/
+          name: kas-lock-aws
+          path: ci/kas-lock
 
       - name: Run yocto-check-layer
         run: |
@@ -82,8 +82,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: kas-lock
-          path: ci/
+          name: kas-lock-aws
+          path: ci/kas-lock
 
       - name: Run Yocto patchreview
         run: |
@@ -113,8 +113,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: kas-lock
-          path: ci/
+          name: kas-lock-aws
+          path: ci/kas-lock
 
       - name: Kas build
         run: |
@@ -125,11 +125,12 @@ jobs:
           mkdir -p ${CACHE_DIR}
           chown -R builder ${KAS_WORK_DIR} ${CACHE_DIR} ./
           sudo -E -u builder kas build ci/mirror.yml:ci/${{ matrix.machine }}.yml
-          ci/yocto-pybootchartgui.sh && mv $KAS_WORK_DIR/build/buildchart.svg .
+          sudo -E -u builder ci/yocto-pybootchartgui.sh
+          mv $KAS_WORK_DIR/build/buildchart.svg .
 
       - uses: actions/upload-artifact@v4
         with:
-          name: buildchart-${{ matrix.machine }}
+          name: buildchart-aws-${{ matrix.machine }}
           path: buildchart.svg
 
       - name: Stage image for publishing
@@ -165,5 +166,5 @@ jobs:
       - name: Upload build URL
         uses: actions/upload-artifact@v4
         with:
-          name: build_url
+          name: build_url-aws
           path: build_url
