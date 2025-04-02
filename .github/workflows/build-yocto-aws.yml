@@ -15,7 +15,7 @@ env:
 
 jobs:
   kas-mirror:
-    if: github.repository == 'qualcomm-linux/meta-qcom'
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -28,7 +28,7 @@ jobs:
 
   kas-lock:
     needs:  kas-mirror
-    if: github.repository == 'qualcomm-linux/meta-qcom'
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -48,7 +48,7 @@ jobs:
 
   yocto-check-layer:
     needs: kas-lock
-    if: github.repository == 'qualcomm-linux/meta-qcom'
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -68,7 +68,7 @@ jobs:
 
   yocto-patchreview:
     needs: kas-lock
-    if: github.repository == 'qualcomm-linux/meta-qcom'
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -87,7 +87,7 @@ jobs:
 
   compile:
     needs: kas-lock
-    if: github.repository == 'qualcomm-linux/meta-qcom'
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
