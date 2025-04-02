@@ -9,14 +9,15 @@ on:
 
 env:
   BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
-  CACHE_DIR: /srv/gh-runners/quic-yocto
-  KAS_REPO_REF_DIR: /srv/gh-runners/quic-yocto/kas-mirrors
-  BASE_ARTIFACT_URL: https://quic-yocto-fileserver-1029608027416.us-central1.run.app
+  CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
+  KAS_REPO_REF_DIR: ${CACHE_DIR}/kas-mirrors
+  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom"
 
 jobs:
   kas-mirror:
     if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    runs-on:
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Update kas mirrors
         run: |
@@ -28,7 +29,8 @@ jobs:
   kas-lock:
     needs:  kas-mirror
     if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    runs-on:
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,7 +38,8 @@ jobs:
 
       - name: Run kas lock
         run: |
-          kas dump --update --lock --inplace ci/base.yml
+          chown -R builder ./
+          sudo -E -u builder kas dump --update --lock --inplace ci/base.yml
 
       - uses: actions/upload-artifact@v4
         with:
@@ -46,7 +49,8 @@ jobs:
   yocto-check-layer:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    runs-on:
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,12 +63,14 @@ jobs:
 
       - name: Run yocto-check-layer
         run: |
-          ci/yocto-check-layer.sh
+          chown -R builder ./
+          sudo -E -u builder ci/yocto-check-layer.sh
 
   yocto-patchreview:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    runs-on:
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -82,6 +88,8 @@ jobs:
   compile:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/meta-qcom'
+    runs-on:
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       fail-fast: true
       matrix:
@@ -92,7 +100,6 @@ jobs:
           - qrb2210-rb1-core-kit
           - qcom-armv8a
           - qcom-armv7a
-    runs-on: [self-hosted, x86]
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
@@ -110,9 +117,10 @@ jobs:
           export SSTATE_DIR=${CACHE_DIR}/sstate-cache
           export KAS_WORK_DIR=$PWD/../kas
           mkdir $KAS_WORK_DIR
-          kas build ci/mirror.yml:ci/${{ matrix.machine }}.yml
+          chown -R builder ${KAS_WORK_DIR} ./
+          sudo -E -u builder kas build ci/mirror.yml:ci/${{ matrix.machine }}.yml
 
-      - name: Publish image
+      - name: Stage image for publishing
         run: |
           build_dir=${CACHE_DIR}/builds/${BUILD_ID}
           mkdir -p $build_dir
@@ -123,37 +131,16 @@ jobs:
           mv $deploy_dir $img_dir
 
           # Instruct our file server to make these files available for download
-          url="${BASE_ARTIFACT_URL}/${BUILD_ID}/${{ matrix.machine }}/"
-
-          retries=8
-          okay=0
-          shopt -s lastpipe  # allows us to capture the value of `okay` in the while loop below
-          for ((i=0; i<retries; i++)); do
-              curl -X POST -H "Accept: text/event-stream" -i --fail-with-body -s -N ${url} | \
-                  while read line; do
-                      echo $line
-                      if [[ $line == STATUS=* ]]; then
-                          if [[ $line == "STATUS=OK" ]]; then
-                              okay=1
-                              break
-                          fi
-                      fi
-                  done
-              [ $okay -eq 1 ] && break
-              echo # new line break in case response doesn't have one
-              echo "Error: unable to publish artifacts, sleep and retry"
-              sleep 2
-          done
-          (( retries == i )) && { echo 'Failed to publish artifacts'; exit 1; }
-
-          echo # new line break in case response doesn't have one
+          url="${BASE_ARTIFACT_URL}/${{ matrix.machine }}/"
           echo Image available at: ${url}
 
   create-output:
     needs: compile
     outputs:
       url: ${{ steps.print-output.outputs.url }}
-    runs-on: [self-hosted, x86]
+    runs-on:
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - buildspec-override:true  # This tells our self-hosted runner to upload artifacts
     steps:
       - name: "Print output"
         id: print-output
