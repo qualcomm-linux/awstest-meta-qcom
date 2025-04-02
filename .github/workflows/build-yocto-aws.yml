@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: kas-lock
+          name: kas-lock-aws
           path: ci/*.lock.yml
 
   yocto-check-layer:
@@ -58,8 +58,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: kas-lock
-          path: ci/
+          name: kas-lock-aws
+          path: ci/kas-lock
 
       - name: Run yocto-check-layer
         run: |
@@ -78,8 +78,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: kas-lock
-          path: ci/
+          name: kas-lock-aws
+          path: ci/kas-lock
 
       - name: Run Yocto patchreview
         run: |
@@ -108,8 +108,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: kas-lock
-          path: ci/
+          name: kas-lock-aws
+          path: ci/kas-lock
 
       - name: Kas build
         run: |
