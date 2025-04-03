@@ -8,6 +8,7 @@ on:
         value: ${{ jobs.create-output.outputs.url }}
 
 env:
+  BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
   CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
   KAS_REPO_REF_DIR: ${CACHE_DIR}/kas-mirrors
   BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom/${{ github.run_id }}"
@@ -122,7 +123,7 @@ jobs:
 
       - name: Publish image
         run: |
-          build_dir=${CACHE_DIR}/builds/${GITHUB_RUN_ID}
+          build_dir=${CACHE_DIR}/builds/${BUILD_ID}
           mkdir -p $build_dir
           img_dir=$build_dir/${{ matrix.machine }}
           [ -d $img_dir ] && rm -rf $img_dir
@@ -130,7 +131,7 @@ jobs:
           find $deploy_dir/ -maxdepth 1 -name "*.rootfs*.qcomflash" -exec rm -rf {} \;
           mv $deploy_dir $img_dir
 
-          url="${BASE_ARTIFACT_URL}/${{ matrix.machine }}/"
+          url="${BASE_ARTIFACT_URL}/${BUILD_ID}/${{ matrix.machine }}/"
           echo Image available at: ${url}
 
   create-output:
