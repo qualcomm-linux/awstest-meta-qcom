@@ -90,7 +90,6 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
-      - buildspec-override:true  # This tells our self-hosted runner to upload artifacts
     strategy:
       fail-fast: true
       matrix:
@@ -140,6 +139,7 @@ jobs:
       url: ${{ steps.print-output.outputs.url }}
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - buildspec-override:true  # This tells our self-hosted runner to upload artifacts
     steps:
       - name: "Print output"
         id: print-output
