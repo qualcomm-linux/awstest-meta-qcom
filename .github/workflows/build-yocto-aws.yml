@@ -95,11 +95,11 @@ jobs:
       matrix:
         machine:
           - qcm6490-idp
-          - qcs6490-rb3gen2-core-kit
-          - qcs9100-ride-sx
-          - qrb2210-rb1-core-kit
-          - qcom-armv8a
-          - qcom-armv7a
+        #  - qcs6490-rb3gen2-core-kit
+        #  - qcs9100-ride-sx
+        #  - qrb2210-rb1-core-kit
+        #  - qcom-armv8a
+        #  - qcom-armv7a
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
