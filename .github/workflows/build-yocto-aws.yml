@@ -11,7 +11,7 @@ env:
   BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
   CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
   KAS_REPO_REF_DIR: ${CACHE_DIR}/kas-mirrors
-  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom/${{ github.run_id }}"
+  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom/${BUILD_ID}"
 
 jobs:
   kas-mirror:
@@ -120,7 +120,7 @@ jobs:
           chown -R builder ${KAS_WORK_DIR} ./
           sudo -E -u builder kas build ci/mirror.yml:ci/${{ matrix.machine }}.yml
 
-      - name: Publish image
+      - name: Stage image for publishing
         run: |
           build_dir=${CACHE_DIR}/builds/${BUILD_ID}
           mkdir -p $build_dir
@@ -130,7 +130,8 @@ jobs:
           find $deploy_dir/ -maxdepth 1 -name "*.rootfs*.qcomflash" -exec rm -rf {} \;
           mv $deploy_dir $img_dir
 
-          url="${BASE_ARTIFACT_URL}/${BUILD_ID}/${{ matrix.machine }}/"
+          # Instruct our file server to make these files available for download
+          url="${BASE_ARTIFACT_URL}/${{ matrix.machine }}/"
           echo Image available at: ${url}
 
   create-output:
@@ -144,9 +145,10 @@ jobs:
       - name: "Print output"
         id: print-output
         run: |
-          echo "Downloads URL: ${BASE_ARTIFACT_URL}"
-          echo "url=\"${BASE_ARTIFACT_URL}\"" >> $GITHUB_OUTPUT
-          echo "${BASE_ARTIFACT_URL}" > build_url
+          build_url="${BASE_ARTIFACT_URL}/${BUILD_ID}"
+          echo "Downloads URL: ${build_url}"
+          echo "url=\"${build_url}\"" >> $GITHUB_OUTPUT
+          echo "${build_url}" > build_url
       - name: Upload build URL
         uses: actions/upload-artifact@v4
         with:
