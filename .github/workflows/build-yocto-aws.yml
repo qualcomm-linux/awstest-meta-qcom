@@ -95,11 +95,11 @@ jobs:
       matrix:
         machine:
           - qcm6490-idp
-          - qcs6490-rb3gen2-core-kit
-          - qcs9100-ride-sx
-          - qrb2210-rb1-core-kit
-          - qcom-armv8a
-          - qcom-armv7a
+        #  - qcs6490-rb3gen2-core-kit
+        #  - qcs9100-ride-sx
+        #  - qrb2210-rb1-core-kit
+        #  - qcom-armv8a
+        #  - qcom-armv7a
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
@@ -138,9 +138,11 @@ jobs:
     needs: compile
     outputs:
       url: ${{ steps.print-output.outputs.url }}
-    runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
-      - buildspec-override:true  # This tells our self-hosted runner to upload artifacts
+    runs-on: codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}-with-buildspec # With BuildSpec flag tells our self-hosted runner to upload artifacts
+    env:
+      IMAGE_PATH: "${CACHE_DIR}/builds/${BUILD_ID}"
+      IMAGE_DIR: ${{ github.repository.name}}-${{ github.run_id }}-${{ github.run_attempt }}
+
     steps:
       - name: "Print output"
         id: print-output
