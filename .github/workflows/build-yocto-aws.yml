@@ -138,11 +138,9 @@ jobs:
     needs: compile
     outputs:
       url: ${{ steps.print-output.outputs.url }}
-    runs-on: codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}-with-buildspec # With BuildSpec flag tells our self-hosted runner to upload artifacts
-    env:
-      IMAGE_PATH: "${CACHE_DIR}/builds/${BUILD_ID}"
-      IMAGE_DIR: ${{ github.repository.name}}-${{ github.run_id }}-${{ github.run_attempt }}
-
+    runs-on: 
+      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - buildspec-override:true # With BuildSpec flag tells our self-hosted runner to upload artifacts
     steps:
       - name: "Print output"
         id: print-output
