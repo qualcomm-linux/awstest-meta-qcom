@@ -10,7 +10,7 @@ on:
 env:
   BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
   CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
-  KAS_REPO_REF_DIR: ${CACHE_DIR}/kas-mirrors
+  KAS_REPO_REF_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors
   BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom/${BUILD_ID}"
 
 jobs:
@@ -95,9 +95,9 @@ jobs:
       matrix:
         machine:
           - qcm6490-idp
-        #  - qcs6490-rb3gen2-core-kit
-        #  - qcs9100-ride-sx
-        #  - qrb2210-rb1-core-kit
+          - qcs6490-rb3gen2-core-kit
+          - qcs9100-ride-sx
+          - qrb2210-rb1-core-kit
         #  - qcom-armv8a
         #  - qcom-armv7a
     name: ${{ matrix.machine }}/poky/systemd
