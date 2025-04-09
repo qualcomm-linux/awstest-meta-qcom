@@ -19,11 +19,15 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
     steps:
       - name: Update kas mirrors
         run: |
           echo "KAS REPO Location : ${KAS_REPO_REF_DIR}"
-          git config --global --add safe.directory "${KAS_REPO_REF_DIR}/*"
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/git.yoctoproject.org.meta-yocto
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.bitbake
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.openembedded-core
+
           for r in $(find ${KAS_REPO_REF_DIR}/* -maxdepth 0 -type d); do
             echo "pre-fetch: $r"
             git -C $r fetch --prune origin '+refs/*:refs/*'
@@ -34,6 +38,7 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,6 +59,7 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,6 +80,7 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
     steps:
       - uses: actions/checkout@v4
         with:
@@ -143,6 +150,7 @@ jobs:
       url: ${{ steps.print-output.outputs.url }}
     runs-on: 
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
       - buildspec-override:true # With BuildSpec flag tells our self-hosted runner to upload artifacts
     steps:
       - name: "Print output"
