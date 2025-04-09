@@ -21,8 +21,8 @@ jobs:
     steps:
       - name: Update kas mirrors
         run: |
-          echo "Current working dir $pwd"
           echo "KAS REPO Location : ${KAS_REPO_REF_DIR}"
+          chown -R builder ${KAS_REPO_REF_DIR}
           for r in $(find ${KAS_REPO_REF_DIR}/* -maxdepth 0 -type d); do
             echo "pre-fetch: $r"
             git -C $r fetch --prune origin '+refs/*:refs/*'
