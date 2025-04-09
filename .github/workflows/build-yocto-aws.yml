@@ -59,7 +59,7 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
-      - instance-size:small
+      - instance-size:medium
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,7 +80,7 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
-      - instance-size:small
+      - instance-size:medium
     steps:
       - uses: actions/checkout@v4
         with:
@@ -93,6 +93,7 @@ jobs:
 
       - name: Run Yocto patchreview
         run: |
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.bitbake
           ci/yocto-patchreview.sh
 
   compile:
