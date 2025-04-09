@@ -1,7 +1,8 @@
 name: Build Yocto
 
 on:
-  workflow_call:
+  workflow_dispatch:
+  workflow_call:    
     outputs:
       artifacts_url:
         description: "URL to retrieve build artifacts"
@@ -22,7 +23,7 @@ jobs:
       - name: Update kas mirrors
         run: |
           echo "KAS REPO Location : ${KAS_REPO_REF_DIR}"
-          git config --glboal --add safe.directory "${KAS_REPO_REF_DIR}"
+          git config --global --add safe.directory "${KAS_REPO_REF_DIR}"
           for r in $(find ${KAS_REPO_REF_DIR}/* -maxdepth 0 -type d); do
             echo "pre-fetch: $r"
             git -C $r fetch --prune origin '+refs/*:refs/*'
