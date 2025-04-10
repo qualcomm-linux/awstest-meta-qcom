@@ -1,4 +1,4 @@
-name: Build Yocto
+name: Build Yocto on ArtTest
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
   kas-mirror:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
       - instance-size:small
     steps:
       - name: Update kas mirrors
@@ -37,7 +37,7 @@ jobs:
     needs:  kas-mirror
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
       - instance-size:small
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
       - instance-size:medium
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
       - instance-size:large
     steps:
       - uses: actions/checkout@v4
@@ -93,14 +93,16 @@ jobs:
 
       - name: Run Yocto patchreview
         run: |
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/git.yoctoproject.org.meta-yocto
           git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.bitbake
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.openembedded-core
           ci/yocto-patchreview.sh
 
   compile:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       fail-fast: true
       matrix:
@@ -150,7 +152,7 @@ jobs:
     outputs:
       url: ${{ steps.print-output.outputs.url }}
     runs-on: 
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
       - instance-size:small
       - buildspec-override:true # With BuildSpec flag tells our self-hosted runner to upload artifacts
     steps:
