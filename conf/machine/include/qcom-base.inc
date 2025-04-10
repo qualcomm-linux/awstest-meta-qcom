@@ -4,6 +4,8 @@
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-yocto-dev"
 
 KERNEL_IMAGETYPE ?= "Image"
+KERNEL_ALT_IMAGETYPE ?= "vmlinux"
+
 KERNEL_IMAGETYPES ?= "Image.gz"
 
 # For dtb.bin generation
