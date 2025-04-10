@@ -80,7 +80,7 @@ jobs:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
       - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
-      - instance-size:medium
+      - instance-size:large
     steps:
       - uses: actions/checkout@v4
         with:
