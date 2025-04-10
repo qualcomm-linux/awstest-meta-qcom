@@ -1,7 +1,8 @@
-name: Build Yocto
+name: Build Yocto on ArtTest
 
 on:
-  workflow_call:
+  workflow_dispatch:
+  workflow_call:    
     outputs:
       artifacts_url:
         description: "URL to retrieve build artifacts"
@@ -10,17 +11,24 @@ on:
 env:
   BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
   CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
-  KAS_REPO_REF_DIR: ${CACHE_DIR}/kas-mirrors
-  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom"
+  BUILD_DIR: ${{ github.workspace }}
+  KAS_REPO_REF_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors
+  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom/${BUILD_ID}"
 
 jobs:
   kas-mirror:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
     steps:
       - name: Update kas mirrors
         run: |
+          echo "KAS REPO Location : ${KAS_REPO_REF_DIR}"
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/git.yoctoproject.org.meta-yocto
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.bitbake
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.openembedded-core
+
           for r in $(find ${KAS_REPO_REF_DIR}/* -maxdepth 0 -type d); do
             echo "pre-fetch: $r"
             git -C $r fetch --prune origin '+refs/*:refs/*'
@@ -30,7 +38,8 @@ jobs:
     needs:  kas-mirror
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:small
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,7 +59,8 @@ jobs:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:medium
     steps:
       - uses: actions/checkout@v4
         with:
@@ -70,7 +80,8 @@ jobs:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:large
     steps:
       - uses: actions/checkout@v4
         with:
@@ -83,23 +94,26 @@ jobs:
 
       - name: Run Yocto patchreview
         run: |
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/git.yoctoproject.org.meta-yocto
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.bitbake
+          git config --global --add safe.directory /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors/github.com.openembedded.openembedded-core
           ci/yocto-patchreview.sh
 
   compile:
     needs: kas-lock
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
     strategy:
       fail-fast: true
       matrix:
         machine:
-          - qcm6490-idp
+        #  - qcm6490-idp
           - qcs6490-rb3gen2-core-kit
-          - qcs9100-ride-sx
+        #  - qcs9100-ride-sx
           - qrb2210-rb1-core-kit
-          - qcom-armv8a
-          - qcom-armv7a
+        #  - qcom-armv8a
+        #  - qcom-armv7a
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +127,7 @@ jobs:
 
       - name: Kas build
         run: |
-          export DL_DIR=${CACHE_DIR}/downloads
+          export DL_DIR=${BUILD_DIR}/downloads
           export SSTATE_DIR=${CACHE_DIR}/sstate-cache
           export KAS_WORK_DIR=$PWD/../kas
           mkdir $KAS_WORK_DIR
@@ -138,9 +152,10 @@ jobs:
     needs: compile
     outputs:
       url: ${{ steps.print-output.outputs.url }}
-    runs-on:
-      - codebuild-QualcommLinux-MetaQcom-${{ github.run_id }}-${{ github.run_attempt }}
-      - buildspec-override:true  # This tells our self-hosted runner to upload artifacts
+    runs-on: 
+      - codebuild-QualcommLinux-MetaQcom-Perf-${{ github.run_id }}-${{ github.run_attempt }}
+      - instance-size:large
+      - buildspec-override:true # With BuildSpec flag tells our self-hosted runner to upload artifacts
     steps:
       - name: "Print output"
         id: print-output

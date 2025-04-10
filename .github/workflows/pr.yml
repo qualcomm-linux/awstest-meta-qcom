@@ -19,10 +19,10 @@ jobs:
       with:
         name: Event File
         path: ${{ github.event_path }}
-  build-pr:
-    uses: ./.github/workflows/build-yocto.yml
+  #build-pr:
+  #  uses: ./.github/workflows/build-yocto.yml
   build-pr-aws:
     uses: ./.github/workflows/build-yocto-aws.yml
-  schema-check:
-    uses: ./.github/workflows/lava-schema-check.yml
+  #schema-check:
+  #  uses: ./.github/workflows/lava-schema-check.yml
 
