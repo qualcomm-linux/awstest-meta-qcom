@@ -13,7 +13,7 @@ env:
   CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
   BUILD_DIR: ${{ github.workspace }}
   KAS_REPO_REF_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors
-  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/qualcomm-linux/meta-qcom/${BUILD_ID}"
+  BASE_ARTIFACT_URL: "https://artifactory-qdc-global.qualcomm.com/artifactory/pdlm-qcomlinux-generic-lv-fed/QualcommLinuxPrd/"
 
 jobs:
   kas-mirror:

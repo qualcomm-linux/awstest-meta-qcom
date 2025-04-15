@@ -48,6 +48,11 @@ create_qcomflash_pkg() {
         done
     fi
 
+    # vmlinux
+    [ -e "${DEPLOY_DIR_IMAGE}/vmlinux" -a \
+        ! -e "vmlinux" ] && \
+        install -m 0644 "${DEPLOY_DIR_IMAGE}/vmlinux" vmlinux
+
     # Legacy boot images
     if [ -n "${QCOM_DTB_DEFAULT}" ]; then
         [ -e "${DEPLOY_DIR_IMAGE}/boot-initramfs-${QCOM_DTB_DEFAULT}-${MACHINE}.img" -a \
