@@ -193,7 +193,7 @@ with the suggested change instead.
 
 * Naveen Kumar <quic_kumarn@quicinc.com>
 * Sourabh Banerjee <quic_sbanerje@quicinc.com>
-* Viswanath Kraleti <quic_vkraleti@quicinc.com>
+* Viswanath Kraleti <vkraleti@oss.qualcomm.com>
 * Ricardo Salveti <ricardo.salveti@oss.qualcomm.com>
 * Nicolas Dechesne <nicolas.dechesne@oss.qualcomm.com>
 

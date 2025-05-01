@@ -28,6 +28,7 @@ do_image_qcomflash[dirs] = "${QCOMFLASH_DIR}"
 do_image_qcomflash[cleandirs] = "${QCOMFLASH_DIR}"
 do_image_qcomflash[depends] += "${@ ['', '${QCOM_PARTITION_CONF}:do_deploy'][d.getVar('QCOM_PARTITION_CONF') != '']} \
                                 virtual/kernel:do_deploy \
+				${@'virtual/bootloader:do_deploy' if d.getVar('PREFERRED_PROVIDER_virtual/bootloader') else  ''} \
 				${@'${QCOM_ESP_IMAGE}:do_image_complete' if d.getVar('QCOM_ESP_IMAGE') != '' else  ''}"
 IMAGE_TYPEDEP:qcomflash += "${IMAGE_QCOMFLASH_FS_TYPE}"
 

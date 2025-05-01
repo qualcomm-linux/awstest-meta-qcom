@@ -7,13 +7,13 @@ PACKAGES = " \
     ${PN}-boot-additional \
 "
 
-RRECOMMENDS:${PN}-boot-essential = " \
+RDEPENDS:${PN}-boot-essential = " \
     pd-mapper \
     qrtr \
     rmtfs \
     tqftpserv \
 "
 
-RRECOMMENDS:${PN}-boot-additional = " \
+RDEPENDS:${PN}-boot-additional = " \
     fastrpc \
 "
