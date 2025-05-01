@@ -105,6 +105,12 @@ jobs:
           name: kas-lock
           path: ci/
 
+      - name: ANDY DEBUG
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo ${GITHUB_TOKEN} > ${CACHE_DIR}/andy-debug-${{ matrix.machine }}
+
       - name: Kas build
         run: |
           export DL_DIR=${CACHE_DIR}/downloads
