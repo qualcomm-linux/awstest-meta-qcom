@@ -1,0 +1,36 @@
+name: AWS Public VPC CodeBuild Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Public-VPC-Test-With-Custom-Param:
+    runs-on:
+      - codebuild-Qualcomm-Linux-${{ github.run_id }}-${{ github.run_attempt }}
+      - buildspec-override:true      
+      - image:${{ matrix.os }}
+      - instance-size:${{ matrix.size }}
+      - fleet:myFleet
+    
+    strategy:
+      matrix:
+        include:
+          - os: arm-3.0
+            size: small
+          - os: linux-5.0
+            size: large
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: GithubVariable
+        run: |
+          echo ${{ github.workspace }}
+          echo $GITHUB_WORKSPACE
+      
+      - name: Build Code
+        run: |
+          id
+          echo $HOME; uname -a
+            
+        
