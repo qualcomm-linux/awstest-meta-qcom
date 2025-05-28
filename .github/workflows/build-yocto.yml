@@ -16,7 +16,7 @@ env:
 jobs:
   kas-setup:
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
-    runs-on: [self-hosted, x86, amd64-dev]
+    runs-on: [self-hosted, qcom-u2404, amd64-dev]
     steps:
       - name: Update kas mirrors
         run: |
@@ -41,7 +41,7 @@ jobs:
   yocto-check-layer:
     needs: kas-setup
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
-    runs-on: [self-hosted, x86, amd64-dev]
+    runs-on: [self-hosted, qcom-u2404, amd64-dev]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,7 +59,7 @@ jobs:
   yocto-patchreview:
     needs: kas-setup
     if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
-    runs-on: [self-hosted, x86, amd64-dev]
+    runs-on: [self-hosted, qcom-u2404, amd64-dev]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,7 +91,7 @@ jobs:
           - qrb2210-rb1-core-kit
           - qcom-armv8a
           - qcom-armv7a
-    runs-on: [self-hosted, x86, amd64-dev]
+    runs-on: [self-hosted, qcom-u2404, amd64-dev]
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
@@ -142,7 +142,7 @@ jobs:
     needs: compile
     outputs:
       url: ${{ steps.print-output.outputs.url }}
-    runs-on: [self-hosted, x86, amd64-dev]
+    runs-on: [self-hosted, qcom-u2404, amd64-dev]
     steps:
       - name: "Print output"
         id: print-output
