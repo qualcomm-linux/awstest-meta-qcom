@@ -8,13 +8,15 @@ on:
         value: ${{ jobs.create-output.outputs.url }}
 
 env:
-  CACHE_DIR: /srv/gh-runners/quic-yocto
-  KAS_REPO_REF_DIR: /srv/gh-runners/quic-yocto/kas-mirrors
+  #CACHE_DIR: /srv/gh-runners/quic-yocto
+  #KAS_REPO_REF_DIR: /srv/gh-runners/quic-yocto/kas-mirrors
+  CACHE_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto
+  KAS_REPO_REF_DIR: /efs/qli/metaqcom/gh-runners/quic-yocto/kas-mirrors
 
 jobs:
   kas-setup:
-    if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
+    runs-on: [self-hosted, x86, amd64-dev]
     steps:
       - name: Update kas mirrors
         run: |
@@ -38,8 +40,8 @@ jobs:
 
   yocto-check-layer:
     needs: kas-setup
-    if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
+    runs-on: [self-hosted, x86, amd64-dev]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,8 +58,8 @@ jobs:
 
   yocto-patchreview:
     needs: kas-setup
-    if: github.repository == 'qualcomm-linux/meta-qcom'
-    runs-on: [self-hosted, x86]
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
+    runs-on: [self-hosted, x86, amd64-dev]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,7 +76,7 @@ jobs:
 
   compile:
     needs: kas-setup
-    if: github.repository == 'qualcomm-linux/meta-qcom'
+    if: github.repository == 'qualcomm-linux/awstest-meta-qcom'
     outputs:
       url: ${{ steps.upload_artifacts.outputs.url }}
     strategy:
@@ -89,7 +91,7 @@ jobs:
           - qrb2210-rb1-core-kit
           - qcom-armv8a
           - qcom-armv7a
-    runs-on: [self-hosted, x86]
+    runs-on: [self-hosted, x86, amd64-dev]
     name: ${{ matrix.machine }}/poky/systemd
     steps:
       - uses: actions/checkout@v4
@@ -140,7 +142,7 @@ jobs:
     needs: compile
     outputs:
       url: ${{ steps.print-output.outputs.url }}
-    runs-on: [self-hosted, x86]
+    runs-on: [self-hosted, x86, amd64-dev]
     steps:
       - name: "Print output"
         id: print-output
